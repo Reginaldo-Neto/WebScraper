@@ -7,7 +7,7 @@ Web Scraper desenvolvido em SCALA para a disciplina de Linguagens de Programaç�
 | -------- | ------- |
 | 2252813  |     Reginaldo Gregório de Souza Neto |
 | 2349345 |     Gabriela Paola Sereniski |
-| 0000000    |  Marcos Quadros  |
+| 2380560    |  Marcos Vinicius de Quadros  |
 
 
 ### Comandos
