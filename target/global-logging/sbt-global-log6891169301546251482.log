@@ -5,3 +5,4 @@
 [0m[[0m[0minfo[0m] [0m[0mcompiling 1 Scala source to /home/gab/teste/WebScraper/target/scala-2.13/classes ...[0m
 [0m[[0m[32msuccess[0m] [0m[0mTotal time: 64 s (01:04), completed 6 de jun de 2023 20:30:39[0m
 [0m[[0m[0mdebug[0m] [0m[0m> Exec(shell, None, None)[0m
+[0m[[0m[0mdebug[0m] [0m[0mForcing garbage collection...[0m
