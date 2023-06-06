@@ -13,5 +13,6 @@ Web Scraper desenvolvido em SCALA para a disciplina de Linguagens de Programaç�
 ### Comandos
 
 Para executar o código clone esse repositório em uma pasta de seu computador,
-Em seguida, faça "sbt compile" e depois "sbt run".
+Em seguida, execute "sbt" para iniciar o servidor java.
+Então execute "compile" e depois "run".
 E ta pronto o sovetinho!
