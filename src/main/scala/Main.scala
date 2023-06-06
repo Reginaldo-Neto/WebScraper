@@ -19,6 +19,7 @@ object Main {
     
     val rottenData = scrapRotten(searchTerm)
     
+    // fazer algo mais legal com as infos coletadas
     imdbData.foreach(println)
     println("---------------------------------------------")
     println("---------------------------------------------")
