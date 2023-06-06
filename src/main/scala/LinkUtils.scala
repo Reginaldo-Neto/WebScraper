@@ -21,10 +21,10 @@ object LinkUtils {
     def filterInvalidLinks(links: List[String]): List[String] = {
         val validLinks = links.filter { link =>
             try {
-              val connection = Jsoup.connect(link).execute()
-              connection.statusCode() == 200
+                val connection = Jsoup.connect(link).execute()
+                connection.statusCode() == 200
             } catch {
-              case _: Exception => false
+                case _: Exception => false
             }
         }
         validLinks
