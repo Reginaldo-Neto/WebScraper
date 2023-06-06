@@ -1,0 +1,4 @@
+[debug] [webcrawl] Classpath dependencies List()
+[debug] [webcrawl] Dependencies from configurations List()
+[debug] Bloop wrote the configuration of project 'webcrawl' to '/home/gab/webcrawl/.bloop/webcrawl.json'
+[success] Generated .bloop/webcrawl.json
