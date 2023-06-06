@@ -38,7 +38,7 @@ object LinkUtils {
     validLinks
   }
 
-  def processLinks(links: List[String]): List[(String, String, String, String)] = {
+  def processRottenLinks(links: List[String]): List[(String, String, String, String)] = {
     // var counter = 1
     val extractedData = links.flatMap { link =>
       val doc = Jsoup.connect(link).get()
@@ -59,6 +59,34 @@ object LinkUtils {
 
       // Retorna uma tupla contendo o título, o preço e a descrição do item
       List((title, tomatometer, audience, description))
+    }
+
+    extractedData
+  }
+
+  def processIMDBLinks(links: List[String]): List[(String, String, String, String)] = {
+    // var counter = 1
+    val extractedData = links.flatMap { link =>
+      val doc = Jsoup.connect(link).get()
+
+      // val htmlContent = doc.html()
+      // val filepath = s"output$counter.html"
+      // counter += 1
+      // val writer = new PrintWriter(filepath)
+      // writer.println(htmlContent)
+      // writer.close()
+      // println(s"Conteudo salvo em $filepath")
+
+      // Extrai o título, o preço e a descrição do item da página
+      val title = doc.select("span.sc-afe43def-1.fDTGTb").text()
+      val ratingElement = Option(doc.select("span.sc-bde20123-1.iZlgcd").first())
+      val rating = ratingElement.map(_.text()).getOrElse("N/A")
+      val popularityElement = Option(doc.select("div[data-testid=hero-rating-bar__popularity__score]").first())
+      val popularity = popularityElement.map(_.text()).getOrElse("N/A")
+      val description = doc.select("span[data-testid=plot-xs_to_m]").text()
+
+      // Retorna uma tupla contendo o título, o preço e a descrição do item
+      List((title, rating, popularity, description))
     }
 
     extractedData
