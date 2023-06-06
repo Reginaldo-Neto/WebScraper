@@ -1,4 +1,3 @@
-import LinkUtils._
 import ScrapRotten._
 import ScrapIMDB._
 
@@ -17,7 +16,12 @@ object Main {
     val searchTerm = StdIn.readLine()
     
     val imdbData = scrapIMDB(searchTerm)
-
+    
+    val rottenData = scrapRotten(searchTerm)
+    
     imdbData.foreach(println)
+    println("---------------------------------------------")
+    println("---------------------------------------------")
+    rottenData.foreach(println)
   }
 }
