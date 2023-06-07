@@ -7,59 +7,70 @@ import scala.io.Source
 import scala.io.StdIn
 import java.io.PrintWriter
 
+import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+
+import scala.concurrent.Await
+
 object ScrapIMDB {
-    val searchBase = "https://www.imdb.com/find/?q=" // Insira o link de busca aqui
-    val searchEnd = "&s=tt&ttype=ft&ref_=fn_ft"
-    val baseLink = "https://www.imdb.com"
-    
-    def scrapIMDB(searchTerm: String): List[(String, String, String, String, String)] = {
-        val searchExp = searchTerm.replace(" ", "%20")
-        val searchUrl = searchBase + searchExp + searchEnd
+  val searchBase = "https://www.imdb.com/find/?q="
+  val searchEnd = "&s=tt&ttype=ft&ref_=fn_ft"
+  val baseLink = "https://www.imdb.com"
 
-        // Realiza a requisição HTTP e obtém o conteúdo da página de resultados
-        val doc = Jsoup.connect(searchUrl).get()
+  def scrapIMDB(searchTerm: String): List[(String, String, String, String, String)] = {
+    val searchExp = searchTerm.replace(" ", "%20")
+    val searchUrl = searchBase + searchExp + searchEnd
 
-        // Extrai todos os links da página de resultados
-        val links = extractLinks(doc)
-        val filtered = links.filter(_.startsWith("/title/"))
+    // Faz a requisição HTTP e obtém o documento HTML
+    val doc = Jsoup.connect(searchUrl).get()
 
-        val fullLinks = filtered.map(link => baseLink + link)
+    // Extrai os links da página de busca
+    val links = extractLinks(doc)
 
-        val uniqueLinks = fullLinks.distinct
+    // Filtra os links para obter apenas os links de filmes
+    val filtered = links.filter(_.startsWith("/title/"))
 
-        val validLinks = filterInvalidLinks(uniqueLinks)
+    // Cria os links completos adicionando o prefixo base
+    val fullLinks = filtered.map(link => baseLink + link)
 
-        // Processa os links e extrai informações das páginas
-        val extractedData = processIMDBPages(validLinks)
+    // Remove links duplicados
+    val uniqueLinks = fullLinks.distinct
 
-        extractedData
+    // Filtra os links inválidos
+    val validLinks = filterInvalidLinks(uniqueLinks)
+
+    // Processa as páginas do IMDB e extrai os dados
+    processIMDBPages(validLinks)
+  }
+
+  def processIMDBPages(links: List[String]): List[(String, String, String, String, String)] = {
+    // Cria uma lista de futuros, onde cada futuro representa o processamento assíncrono de uma página
+    val extractedDataFutures = links.map { link =>
+      Future {
+        // Faz a requisição HTTP para obter o documento HTML da página do IMDB
+        val doc = Jsoup.connect(link).get()
+
+        // Extrai as informações do filme da página
+        val title = doc.select("span.sc-afe43def-1.fDTGTb").text()
+        val ratingElement = Option(doc.select("span.sc-bde20123-1.iZlgcd").first())
+        val rating = ratingElement.map(_.text()).getOrElse("N/A")
+        val popularityElement = Option(doc.select("div[data-testid=hero-rating-bar__popularity__score]").first())
+        val popularity = popularityElement.map(_.text()).getOrElse("N/A")
+        val description = doc.select("span[data-testid=plot-xs_to_m]").text()
+
+        // Retorna uma tupla contendo as informações do filme e o link da página
+        (title, rating, popularity, description, link)
+      }
     }
 
-    def processIMDBPages(links: List[String]): List[(String, String, String, String, String)] = {
-        // var counter = 1
-        val extractedData = links.flatMap { link =>
-            val doc = Jsoup.connect(link).get()
+    // Combina todos os futuros em um único futuro que produz uma lista de resultados
+    val extractedDataFuture = Future.sequence(extractedDataFutures)
 
-            // val htmlContent = doc.html()
-            // val filepath = s"output$counter.html"
-            // counter += 1
-            // val writer = new PrintWriter(filepath)
-            // writer.println(htmlContent)
-            // writer.close()
-            // println(s"Conteudo salvo em $filepath")
+    // Espera pelos resultados finais com um tempo limite de 90 segundos
+    val extractedData = Await.result(extractedDataFuture, 90.seconds)
 
-            // Extrai o título, o preço e a descrição do item da página
-            val title = doc.select("span.sc-afe43def-1.fDTGTb").text()
-            val ratingElement = Option(doc.select("span.sc-bde20123-1.iZlgcd").first())
-            val rating = ratingElement.map(_.text()).getOrElse("N/A")
-            val popularityElement = Option(doc.select("div[data-testid=hero-rating-bar__popularity__score]").first())
-            val popularity = popularityElement.map(_.text()).getOrElse("N/A")
-            val description = doc.select("span[data-testid=plot-xs_to_m]").text()
-
-            // Retorna uma tupla contendo o título, o preço e a descrição do item
-            List((title, rating, popularity, description, link))
-        }
-
-        extractedData
+    // Retorna a lista de dados extraídos das páginas do IMDB
+    extractedData
   }
 }
