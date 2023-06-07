@@ -1,6 +1,6 @@
-[0m[[0m[0mdebug[0m] [0m[0m> Exec(run, Some(f9b99d62-97ee-4356-990f-f67b8afa987b), Some(CommandSource(console0)))[0m
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(run, Some(be06d641-1dec-4c0d-beb6-afc290f3e152), Some(CommandSource(console0)))[0m
 [0m[[0m[0mdebug[0m] [0m[0mEvaluating tasks: Compile / run[0m
 [0m[[0m[0mdebug[0m] [0m[0mRunning task... Cancel: Signal, check cycles: false, forcegc: true[0m
 [0m[[0m[0minfo[0m] [0m[0mcompiling 1 Scala source to /home/gab/teste/WebScraper/target/scala-2.13/classes ...[0m
-[0m[[0m[32msuccess[0m] [0m[0mTotal time: 53 s, completed 6 de jun de 2023 21:40:04[0m
+[0m[[0m[32msuccess[0m] [0m[0mTotal time: 47 s, completed 6 de jun de 2023 21:59:22[0m
 [0m[[0m[0mdebug[0m] [0m[0m> Exec(shell, None, None)[0m
