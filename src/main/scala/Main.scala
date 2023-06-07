@@ -8,21 +8,38 @@ import scala.io.Source
 import scala.io.StdIn
 import java.io.PrintWriter
 
-object Main {
-  
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
 
-  def main(args: Array[String]): Unit = {
-    println("Digite o termo de busca:")
-    val searchTerm = StdIn.readLine()
-    
-    val imdbData = scrapIMDB(searchTerm)
-    
-    val rottenData = scrapRotten(searchTerm)
-    
-    // fazer algo mais legal com as infos coletadas
-    imdbData.foreach(println)
-    println("---------------------------------------------")
-    println("---------------------------------------------")
-    rottenData.foreach(println)
-  }
+object Main {
+    def main(args: Array[String]): Unit = {
+      println("Digite o termo de busca:")
+      val searchTerm = scala.io.StdIn.readLine()
+
+      val imdbFuture: Future[List[(String, String, String, String, String)]] = Future {
+          scrapIMDB(searchTerm)
+      }
+
+      val rottenFuture: Future[List[(String, String, String, String, String)]] = Future {
+          scrapRotten(searchTerm)
+      }
+
+      val combinedFuture: Future[(List[(String, String, String, String, String)], List[(String, String, String, String, String)])] =
+          for {
+              imdbData <- imdbFuture
+              rottenData <- rottenFuture
+          } yield (imdbData, rottenData)
+
+      val combinedResult = Await.result(combinedFuture, 90.seconds)
+
+      val imdbResult = combinedResult._1
+      val rottenResult = combinedResult._2
+
+      // Fazer algo mais interessante com as informações coletadas
+      imdbResult.foreach(println)
+      println("---------------------------------------------")
+      println("---------------------------------------------")
+      rottenResult.foreach(println)
+    }
 }
