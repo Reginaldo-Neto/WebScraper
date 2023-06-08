@@ -44,40 +44,70 @@ object Main {
 
     val processedFuture: Future[Unit] = combinedFuture.map { case (imdbData, rottenData, metaData) =>
 
-      println("Aqui")
-      // imdbData.foreach(println)
-      // rottenData.foreach(println)
-      // metaData.foreach(println)
-
-      // Criar um novo livro de trabalho do Excel
       val workbook = new XSSFWorkbook()
       val sheet = workbook.createSheet("Dados")
 
-      // Escrever os cabeçalhos das colunas
-      val headers = Array("Título", "MetaScore", "UserScore", "Descrição", "Link")
+      val headers = Array("Title", "Rating", "Popularity", "Description", "Link")
       val headerRow = sheet.createRow(0)
       headers.indices.foreach(i => {
         val cell = headerRow.createCell(i)
         cell.setCellValue(headers(i))
       })
 
-      // Escrever os dados nas células
-      metaData.zipWithIndex.foreach { case (data, rowIndex) =>
-        val row = sheet.createRow(rowIndex + 1)
+      var rowIndex = 1
+
+      // Escrever os dados da fonte Rotten Tomatoes
+      rottenData.foreach { data =>
+        val row = sheet.createRow(rowIndex)
         data.productIterator.zipWithIndex.foreach { case (value, columnIndex) =>
           val cell = row.createCell(columnIndex)
           cell.setCellValue(value.toString)
         }
+        rowIndex += 1
       }
 
-      // Salvar o arquivo da planilha
+      // Escrever os dados da fonte IMDB
+      imdbData.foreach { data =>
+        val row = sheet.getRow(rowIndex)
+        if (row == null) {
+          val newRow = sheet.createRow(rowIndex)
+          data.productIterator.zipWithIndex.foreach { case (value, columnIndex) =>
+            val cell = newRow.createCell(columnIndex)
+            cell.setCellValue(value.toString)
+          }
+        } else {
+          data.productIterator.zipWithIndex.foreach { case (value, columnIndex) =>
+            val cell = row.createCell(columnIndex)
+            cell.setCellValue(value.toString)
+          }
+        }
+        rowIndex += 1
+      }
+
+      // Escrever os dados da fonte MetaCritic
+      metaData.foreach { data =>
+        val row = sheet.getRow(rowIndex)
+        if (row == null) {
+          val newRow = sheet.createRow(rowIndex)
+          data.productIterator.zipWithIndex.foreach { case (value, columnIndex) =>
+            val cell = newRow.createCell(columnIndex)
+            cell.setCellValue(value.toString)
+          }
+        } else {
+          data.productIterator.zipWithIndex.foreach { case (value, columnIndex) =>
+            val cell = row.createCell(columnIndex)
+            cell.setCellValue(value.toString)
+          }
+        }
+        rowIndex += 1
+      }
+
       val outputStream = new FileOutputStream("dados.xlsx")
       workbook.write(outputStream)
       outputStream.close()
 
     }
 
-    // Esperar pela conclusão do processamento
     Await.result(processedFuture, 300.seconds)
     println("Terminou")
   }

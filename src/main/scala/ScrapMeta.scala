@@ -16,9 +16,10 @@ object ScrapMeta {
     val searchExp = searchTerm.replace(" ", "%20")
     val searchUrl = searchBase + searchExp + searchEnd
 
-    println("AQUi")
-    println(searchUrl)
-    println("________________________________________________________________________________")
+    // println("AQUi")
+    // println(searchUrl)
+    // println("________________________________________________________________________________")
+
     // Realiza a requisição HTTP e obtém o conteúdo da página de resultados
     val doc = Jsoup.connect(searchUrl).get()
 
@@ -36,19 +37,37 @@ object ScrapMeta {
     // Filtra os links inválidos
     val validLinks = filterInvalidLinks(uniqueLinks)
 
-    validLinks.foreach(println)
+    // validLinks.foreach(println)
     // Processa as páginas dos filmes e extrai os dados
     processMetaPages(validLinks)
   }
 
+  // def extractLinksMeta(doc: Document): List[String] = {
+  //   // Utiliza o seletor CSS para encontrar os elementos <a> que contêm os links, excluindo os que estão dentro do componente <nav>
+  //   val linkElements = doc.select("a:not(#primary_nav_item_movies a)")
+
+  //   // Extrai o atributo "href" de cada elemento <a> e converte para uma lista de strings
+  //   val links = linkElements.asScala.map(_.attr("href")).toList
+
+  //   links
+  // }
+
   def extractLinksMeta(doc: Document): List[String] = {
-    // Utiliza o seletor CSS para encontrar os elementos <a> que contêm os links, excluindo os que estão dentro do componente <nav>
     val linkElements = doc.select("a:not(#primary_nav_item_movies a)")
 
-    // Extrai o atributo "href" de cada elemento <a> e converte para uma lista de strings
     val links = linkElements.asScala.map(_.attr("href")).toList
 
-    links
+    val nextPageLink = doc.select("a.action[rel=next]").first()
+
+    if (nextPageLink != null) {
+      val nextPageUrl = nextPageLink.attr("abs:href")
+      val nextPageDoc = Jsoup.connect(nextPageUrl).get()
+      val nextPageLinks = extractLinksMeta(nextPageDoc)
+
+      links ++ nextPageLinks
+    } else {
+      links
+    }
   }
 
   def processMetaPages(links: List[String]): List[(String, String, String, String, String)] = {
