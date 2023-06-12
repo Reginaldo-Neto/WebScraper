@@ -54,9 +54,28 @@ object Main {
         cell.setCellValue(headers(i))
       })
 
-      var rowIndex = 1
-      // // Escrever os dados da fonte MetaCritic
+        var rowIndex = 1
+
+      // Escrever os dados da fonte MetaCritic
       metaData.foreach { data =>
+        val row = sheet.getRow(rowIndex)
+        if (row == null) {
+          val newRow = sheet.createRow(rowIndex)
+          data.productIterator.zipWithIndex.foreach { case (value, columnIndex) =>
+            val cell = newRow.createCell(columnIndex)
+            cell.setCellValue(value.toString)
+          }
+        } else {
+          data.productIterator.zipWithIndex.foreach { case (value, columnIndex) =>
+            val cell = row.createCell(columnIndex)
+            cell.setCellValue(value.toString)
+          }
+        }
+        rowIndex += 1
+      }
+
+      // Escrever os dados da fonte IMDB
+      imdbData.foreach { data =>
         val row = sheet.getRow(rowIndex)
         if (row == null) {
           val newRow = sheet.createRow(rowIndex)
@@ -83,24 +102,6 @@ object Main {
         rowIndex += 1
       }
 
-      // Escrever os dados da fonte IMDB
-      imdbData.foreach { data =>
-        val row = sheet.getRow(rowIndex)
-        if (row == null) {
-          val newRow = sheet.createRow(rowIndex)
-          data.productIterator.zipWithIndex.foreach { case (value, columnIndex) =>
-            val cell = newRow.createCell(columnIndex)
-            cell.setCellValue(value.toString)
-          }
-        } else {
-          data.productIterator.zipWithIndex.foreach { case (value, columnIndex) =>
-            val cell = row.createCell(columnIndex)
-            cell.setCellValue(value.toString)
-          }
-        }
-        rowIndex += 1
-      }
-
       val outputStream = new FileOutputStream("dados.xlsx")
       workbook.write(outputStream)
       outputStream.close()
@@ -108,5 +109,8 @@ object Main {
     }
 
     Await.result(processedFuture, 300.seconds)
+    println("Terminou")
   }
 }
+
+

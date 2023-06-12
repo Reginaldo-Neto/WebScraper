@@ -1,5 +1,5 @@
 [0m[[0m[31merror[0m] [0m[0mjava.lang.NullPointerException[0m
-[0m[[0m[31merror[0m] [0m[0m	at ScrapRotten$.$anonfun$processRottenPages$2(ScrapRotten.scala:60)[0m
+[0m[[0m[31merror[0m] [0m[0m	at ScrapMeta$.$anonfun$processMetaPages$2(ScrapMeta.scala:83)[0m
 [0m[[0m[31merror[0m] [0m[0m	at scala.concurrent.Future$.$anonfun$apply$1(Future.scala:678)[0m
 [0m[[0m[31merror[0m] [0m[0m	at scala.concurrent.impl.Promise$Transformation.run(Promise.scala:467)[0m
 [0m[[0m[31merror[0m] [0m[0m	at java.util.concurrent.ForkJoinTask$RunnableExecuteAction.exec(Unknown Source)[0m

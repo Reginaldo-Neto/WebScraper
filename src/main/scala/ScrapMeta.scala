@@ -80,8 +80,8 @@ object ScrapMeta {
         // Extrai as informações do filme da página
 
         val title = Option(doc.select("div.product_page_title h1").text().trim()).getOrElse("N/A")
-        val metaScore = Option(doc.select("span.metascore_w").first().text()).getOrElse("N/A")
-        val userScore = Option(doc.select("span.metascore_w.user").first().text()).getOrElse("N/A")
+        val metaScore = Option(doc.select("span.metascore_w").first()).map(_.text()).getOrElse("N/A")
+        val userScore = Option(doc.select("span.metascore_w.user").first()).map(_.text()).getOrElse("N/A")    
         val summaryText = Option(doc.select("div.summary_deck.details_section > span:not(.label)").first()).map(_.text()).getOrElse("N/A")
         val director = Option(doc.select("div.director > a > span").first()).fold("N/A")(_.text())
         val runtime = Option(doc.select("div.runtime > span:not(.label)").first()).fold("N/A")(_.text())
