@@ -1,12 +1,2 @@
-[0m[[0m[31merror[0m] [0m[0mC:\Users\Marco\Documentos\Trabalho2-LP\WebScraper\src\main\scala\Main.scala:71:7: not found: value rottimdbData[0m
-[0m[[0m[31merror[0m] [0m[0m      rottimdbData.zipWithIndex.foreach { case (data, rowIndex) =>[0m
-[0m[[0m[31merror[0m] [0m[0m      ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\Marco\Documentos\Trabalho2-LP\WebScraper\src\main\scala\Main.scala:72:46: type mismatch;[0m
-[0m[[0m[31merror[0m] [0m[0m found   : Int(1)[0m
-[0m[[0m[31merror[0m] [0m[0m required: String[0m
-[0m[[0m[31merror[0m] [0m[0m        val row = sheet.createRow(rowIndex + 1)[0m
-[0m[[0m[31merror[0m] [0m[0m                                             ^[0m
-[0m[[0m[31merror[0m] [0m[0mC:\Users\Marco\Documentos\Trabalho2-LP\WebScraper\src\main\scala\Main.scala:73:14: value productIterator is not a member of Any[0m
-[0m[[0m[31merror[0m] [0m[0m        data.productIterator.zipWithIndex.foreach { case (value, columnIndex) =>[0m
-[0m[[0m[31merror[0m] [0m[0m             ^[0m
-[0m[[0m[31merror[0m] [0m[0mthree errors found[0m
+[0m[[0m[33mwarn[0m] [0m[0m2 deprecations (since 2.13.0); re-run with -deprecation for details[0m
+[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m

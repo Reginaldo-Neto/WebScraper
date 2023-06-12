@@ -12,7 +12,7 @@ object ScrapMeta {
   val searchBase = "https://www.metacritic.com/search/movie/"
   val searchEnd = "/results"
 
-  def scrapMeta(searchTerm: String): List[(String, String, String, String, String)] = {
+  def scrapMeta(searchTerm: String): List[(String, String, String, String, String, String, String, String, String)] = {
     val searchExp = searchTerm.replace(" ", "%20")
     val searchUrl = searchBase + searchExp + searchEnd
 
@@ -70,7 +70,7 @@ object ScrapMeta {
     }
   }
 
-  def processMetaPages(links: List[String]): List[(String, String, String, String, String)] = {
+  def processMetaPages(links: List[String]): List[(String, String, String, String, String, String, String, String, String)] = {
     // Cria uma lista de futuros, onde cada futuro representa o processamento assíncrono de uma página
     val extractedDataFutures = links.map { link =>
       Future {
@@ -83,9 +83,13 @@ object ScrapMeta {
         val metaScore = Option(doc.select("span.metascore_w").first().text()).getOrElse("N/A")
         val userScore = Option(doc.select("span.metascore_w.user").first().text()).getOrElse("N/A")
         val summaryText = Option(doc.select("div.summary_deck.details_section > span:not(.label)").first()).map(_.text()).getOrElse("N/A")
+        val director = Option(doc.select("div.director > a > span").first()).fold("N/A")(_.text())
+        val runtime = Option(doc.select("div.runtime > span:not(.label)").first()).fold("N/A")(_.text())
+        val genres = Option(doc.select("div.genres > span:not(.label)").first()).fold("N/A")(_.text())
+        val releaseDate = Option(doc.select("span.release_date > span:not(.label)").first()).map(_.text()).getOrElse("N/A")
 
         // Retorna uma tupla contendo as informações do filme e o link da página
-        (title, metaScore, userScore, summaryText, link)
+        (title, metaScore, userScore, summaryText, director, genres, runtime, releaseDate, link)
       }
     }
 

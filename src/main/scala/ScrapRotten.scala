@@ -15,7 +15,7 @@ import scala.concurrent.Await
 object ScrapRotten {
   val searchBase = "https://www.rottentomatoes.com/search?search="
 
-  def scrapRotten(searchTerm: String): List[(String, String, String, String, String)] = {
+  def scrapRotten(searchTerm: String): List[(String, String, String, String, String, String, String, String, String)] = {
     val searchExp = searchTerm.replace(" ", "%20")
     val searchUrl = searchBase + searchExp
 
@@ -41,7 +41,7 @@ object ScrapRotten {
     processRottenPages(validLinks)
   }
 
-  def processRottenPages(links: List[String]): List[(String, String, String, String, String)] = {
+  def processRottenPages(links: List[String]): List[(String, String, String, String, String, String, String, String, String)] = {
     // Cria uma lista de futuros, onde cada futuro representa o processamento assíncrono de uma página
     val extractedDataFutures = links.map { link =>
       Future {
@@ -53,9 +53,13 @@ object ScrapRotten {
         val tomatometer = Option(doc.select("score-board[data-qa=score-panel]").attr("tomatometerscore")).getOrElse("N/A")
         val audience = Option(doc.select("score-board[data-qa=score-panel]").attr("audiencescore")).getOrElse("N/A")
         val description = Option(doc.select("p[data-qa=movie-info-synopsis]").text()).getOrElse("N/A")
+        val director = Option(doc.select("a[data-qa=movie-info-director]").first()).map(_.text()).getOrElse("N/A")
+        val genres = Option(doc.select("ul#info li[data-qa=movie-info-item] b[data-qa=movie-info-item-label]:contains(Genre) + span").first()).map(_.text().trim()).getOrElse("N/A")
+        val runtime = Option(doc.select("p:has(b[data-qa=movie-info-item-label]:contains(Runtime:)) + span.info-item-value time").first()).map(_.text().trim()).filter(_.nonEmpty).getOrElse("N/A")
+        val releaseDate = Option(doc.select("span.info-item-value time").first()).map(_.text().trim()).getOrElse("N/A")
 
         // Retorna uma tupla contendo as informações do filme e o link da página
-        (title, tomatometer, audience, description, link)
+        (title, tomatometer, audience, description, director, genres, runtime, releaseDate, link)
       }
     }
 
