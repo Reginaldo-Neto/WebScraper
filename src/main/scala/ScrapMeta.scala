@@ -16,10 +16,6 @@ object ScrapMeta {
     val searchExp = searchTerm.replace(" ", "%20")
     val searchUrl = searchBase + searchExp + searchEnd
 
-    // println("AQUi")
-    // println(searchUrl)
-    // println("________________________________________________________________________________")
-
     // Realiza a requisição HTTP e obtém o conteúdo da página de resultados
     val doc = Jsoup.connect(searchUrl).get()
 
@@ -41,16 +37,6 @@ object ScrapMeta {
     // Processa as páginas dos filmes e extrai os dados
     processMetaPages(validLinks)
   }
-
-  // def extractLinksMeta(doc: Document): List[String] = {
-  //   // Utiliza o seletor CSS para encontrar os elementos <a> que contêm os links, excluindo os que estão dentro do componente <nav>
-  //   val linkElements = doc.select("a:not(#primary_nav_item_movies a)")
-
-  //   // Extrai o atributo "href" de cada elemento <a> e converte para uma lista de strings
-  //   val links = linkElements.asScala.map(_.attr("href")).toList
-
-  //   links
-  // }
 
   def extractLinksMeta(doc: Document): List[String] = {
     val linkElements = doc.select("a:not(#primary_nav_item_movies a)")
@@ -78,18 +64,17 @@ object ScrapMeta {
         val doc = Jsoup.connect(link).get()
 
         // Extrai as informações do filme da página
-
         val title = Option(doc.select("div.product_page_title h1").text().trim()).getOrElse("N/A")
         val metaScore = Option(doc.select("span.metascore_w").first()).map(_.text()).getOrElse("N/A")
         val userScore = Option(doc.select("span.metascore_w.user").first()).map(_.text()).getOrElse("N/A")    
         val summaryText = Option(doc.select("div.summary_deck.details_section > span:not(.label)").first()).map(_.text()).getOrElse("N/A")
         val director = Option(doc.select("div.director > a > span").first()).fold("N/A")(_.text())
-        val runtime = Option(doc.select("div.runtime > span:not(.label)").first()).fold("N/A")(_.text())
         val genres = Option(doc.select("div.genres > span:not(.label)").first()).fold("N/A")(_.text())
+        val duration = Option(doc.select("div.runtime > span:not(.label)").first()).fold("N/A")(_.text())
         val releaseDate = Option(doc.select("span.release_date > span:not(.label)").first()).map(_.text()).getOrElse("N/A")
 
         // Retorna uma tupla contendo as informações do filme e o link da página
-        (title, metaScore, userScore, summaryText, director, genres, runtime, releaseDate, link)
+        (title, metaScore, userScore, summaryText, director, genres, duration, releaseDate, link)
       }
     }
 

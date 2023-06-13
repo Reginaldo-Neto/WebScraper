@@ -59,13 +59,13 @@ object ScrapIMDB {
         val popularity = popularityElement.map(_.text()).getOrElse("N/A")
         val description = doc.select("span[data-testid=plot-xs_to_m]").text()
         val director = Option(doc.select("a.ipc-metadata-list-item__list-content-item[role=button]").first()).map(_.text().trim()).getOrElse("N/A")
-        val genreElement = Option(doc.select("ul#info li[data-qa=movie-info-item] b[data-qa=movie-info-item-label]:contains(Genre) + span").first())
-        val genres = genreElement.map(_.text().trim()).getOrElse("N/A")
-        val runtime = Option(doc.select("div.sc-52d569c6-0.kNzJA-D ul.ipc-inline-list li.ipc-inline-list__item").last()).map(_.text().trim()).getOrElse("N/A")
+        val genresElements = Option(Jsoup.parse(doc.toString).select("span.ipc-chip__text").toArray)
+        val genres = genresElements.map(_.map(_.asInstanceOf[org.jsoup.nodes.Element].text()).filterNot(_ == "Back to top").mkString(", ")).getOrElse("")
+        val duration = Option(doc.select("div.sc-52d569c6-0.kNzJA-D ul.ipc-inline-list li.ipc-inline-list__item").last()).map(_.text().trim()).getOrElse("N/A")
         val releaseYear = Option(doc.select("a.ipc-link.ipc-link--baseAlt.ipc-link--inherit-color[href*=/releaseinfo]")).map(_.text().trim()).getOrElse("N/A")
 
         // Retorna uma tupla contendo as informações do filme e o link da página
-        (title, rating, popularity, description, director, genres, runtime, releaseYear, link)
+        (title, rating, popularity, description, director, genres, duration, releaseYear, link)
       }
     }
 
