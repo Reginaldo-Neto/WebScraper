@@ -21,6 +21,8 @@ object Main {
     println("Digite o termo de busca:")
     val searchTerm = scala.io.StdIn.readLine()
 
+    println("Executando...")
+
     val imdbFuture: Future[List[(String, String, String, String, String, String, String, String, String)]] = Future {
       scrapIMDB(searchTerm)
     }
@@ -54,7 +56,7 @@ object Main {
         cell.setCellValue(headers(i))
       })
 
-        var rowIndex = 1
+      var rowIndex = 1
 
       // Escrever os dados da fonte MetaCritic
       metaData.foreach { data =>
@@ -108,8 +110,7 @@ object Main {
 
     }
 
-    Await.result(processedFuture, 300.seconds)
-    println("Terminou")
+    Await.result(processedFuture, 90.seconds)
   }
 }
 
