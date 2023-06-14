@@ -18,7 +18,9 @@ object ScrapIMDB {
   val searchEnd = "&s=tt&ttype=ft&ref_=fn_ft"
   val baseLink = "https://www.imdb.com"
 
-  def scrapIMDB(searchTerm: String): List[(String, String, String, String, String)] = {
+  def scrapIMDB(searchTerm: String): List[(String, String, String, String, String, String, String, String, String)] = {
+    println("Recuperando informações do IMDB...")
+    
     val searchExp = searchTerm.replace(" ", "%20")
     val searchUrl = searchBase + searchExp + searchEnd
 
@@ -44,7 +46,7 @@ object ScrapIMDB {
     processIMDBPages(validLinks)
   }
 
-  def processIMDBPages(links: List[String]): List[(String, String, String, String, String)] = {
+  def processIMDBPages(links: List[String]): List[(String, String, String, String, String, String, String, String, String)] = {
     // Cria uma lista de futuros, onde cada futuro representa o processamento assíncrono de uma página
     val extractedDataFutures = links.map { link =>
       Future {
@@ -58,9 +60,14 @@ object ScrapIMDB {
         val popularityElement = Option(doc.select("div[data-testid=hero-rating-bar__popularity__score]").first())
         val popularity = popularityElement.map(_.text()).getOrElse("N/A")
         val description = doc.select("span[data-testid=plot-xs_to_m]").text()
+        val director = Option(doc.select("a.ipc-metadata-list-item__list-content-item[role=button]").first()).map(_.text().trim()).getOrElse("N/A")
+        val genresElements = Option(Jsoup.parse(doc.toString).select("span.ipc-chip__text").toArray)
+        val genres = genresElements.map(_.map(_.asInstanceOf[org.jsoup.nodes.Element].text()).filterNot(_ == "Back to top").mkString(", ")).getOrElse("")
+        val duration = Option(doc.select("div.sc-52d569c6-0.kNzJA-D ul.ipc-inline-list li.ipc-inline-list__item").last()).map(_.text().trim()).getOrElse("N/A")
+        val releaseYear = Option(doc.select("a.ipc-link.ipc-link--baseAlt.ipc-link--inherit-color[href*=/releaseinfo]")).map(_.text().trim()).getOrElse("N/A")
 
         // Retorna uma tupla contendo as informações do filme e o link da página
-        (title, rating, popularity, description, link)
+        (title, rating, popularity, description, director, genres, duration, releaseYear, link)
       }
     }
 
@@ -68,9 +75,10 @@ object ScrapIMDB {
     val extractedDataFuture = Future.sequence(extractedDataFutures)
 
     // Espera pelos resultados finais com um tempo limite de 90 segundos
-    val extractedData = Await.result(extractedDataFuture, 90.seconds)
+    val extractedData = Await.result(extractedDataFuture, 300.seconds)
 
     // Retorna a lista de dados extraídos das páginas do IMDB
+    println("IMDB Finalizado.")
     extractedData
   }
 }

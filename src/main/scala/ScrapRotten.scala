@@ -15,7 +15,9 @@ import scala.concurrent.Await
 object ScrapRotten {
   val searchBase = "https://www.rottentomatoes.com/search?search="
 
-  def scrapRotten(searchTerm: String): List[(String, String, String, String, String)] = {
+  def scrapRotten(searchTerm: String): List[(String, String, String, String, String, String, String, String, String)] = {
+    println("Recuperando informações do Rotten Tomatoes...")
+
     val searchExp = searchTerm.replace(" ", "%20")
     val searchUrl = searchBase + searchExp
 
@@ -41,7 +43,7 @@ object ScrapRotten {
     processRottenPages(validLinks)
   }
 
-  def processRottenPages(links: List[String]): List[(String, String, String, String, String)] = {
+  def processRottenPages(links: List[String]): List[(String, String, String, String, String, String, String, String, String)] = {
     // Cria uma lista de futuros, onde cada futuro representa o processamento assíncrono de uma página
     val extractedDataFutures = links.map { link =>
       Future {
@@ -53,19 +55,24 @@ object ScrapRotten {
         val tomatometer = Option(doc.select("score-board[data-qa=score-panel]").attr("tomatometerscore")).getOrElse("N/A")
         val audience = Option(doc.select("score-board[data-qa=score-panel]").attr("audiencescore")).getOrElse("N/A")
         val description = Option(doc.select("p[data-qa=movie-info-synopsis]").text()).getOrElse("N/A")
-
+        val director = Option(doc.select("a[data-qa=movie-info-director]").first()).map(_.text()).getOrElse("N/A")
+        val genres = Option(doc.select("ul#info li[data-qa=movie-info-item] b[data-qa=movie-info-item-label]:contains(Genre) + span").first()).map(_.text().trim()).getOrElse("N/A")
+        val releaseDate = Option(doc.select("span.info-item-value time").first()).map(_.text().trim()).getOrElse("N/A")
+        val duration = Option(doc.select("p.info[data-qa=score-panel-subtitle]").first()).flatMap(e => Option(e.text().split(",").last.trim())).getOrElse("N/A")
+        
         // Retorna uma tupla contendo as informações do filme e o link da página
-        (title, tomatometer, audience, description, link)
+        (title, tomatometer, audience, description, director, genres, duration, releaseDate, link)
       }
     }
 
     // Combina todos os futuros em um único futuro que produz uma lista de resultados
     val extractedDataFuture = Future.sequence(extractedDataFutures)
 
-    // Espera pelos resultados finais com um tempo limite de 90 segundos
-    val extractedData = Await.result(extractedDataFuture, 90.seconds)
+    // Espera pelos resultados finais com um tempo limite de 300 segundos
+    val extractedData = Await.result(extractedDataFuture, 300.seconds)
 
     // Retorna a lista de dados extraídos das páginas dos filmes
+    println("Rotten Tomatoes Finalizado.")
     extractedData
   }
 }
