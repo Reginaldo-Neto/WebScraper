@@ -21,8 +21,6 @@ object Main {
     println("Digite o termo de busca:")
     val searchTerm = scala.io.StdIn.readLine()
 
-    println("Executando...")
-
     val imdbFuture: Future[List[(String, String, String, String, String, String, String, String, String)]] = Future {
       scrapIMDB(searchTerm)
     }
@@ -45,6 +43,7 @@ object Main {
       } yield (imdbData, rottenData, metaData)
 
     val processedFuture: Future[Unit] = combinedFuture.map { case (imdbData, rottenData, metaData) =>
+      println("Registrando informações no arquivo de saída.")
 
       val workbook = new XSSFWorkbook()
       val sheet = workbook.createSheet("Dados")
@@ -104,13 +103,14 @@ object Main {
         rowIndex += 1
       }
 
-      val outputStream = new FileOutputStream("dados.xlsx")
+      val outputFileName = searchTerm.replace(" ", "_") + "_search_data.xlsx"
+      val outputStream = new FileOutputStream(outputFileName)
       workbook.write(outputStream)
       outputStream.close()
-
+      println("Fim da execução.")
     }
 
-    Await.result(processedFuture, 90.seconds)
+    Await.result(processedFuture, 300.seconds)
   }
 }
 

@@ -16,6 +16,8 @@ object ScrapRotten {
   val searchBase = "https://www.rottentomatoes.com/search?search="
 
   def scrapRotten(searchTerm: String): List[(String, String, String, String, String, String, String, String, String)] = {
+    println("Recuperando informações do Rotten Tomatoes...")
+
     val searchExp = searchTerm.replace(" ", "%20")
     val searchUrl = searchBase + searchExp
 
@@ -66,10 +68,11 @@ object ScrapRotten {
     // Combina todos os futuros em um único futuro que produz uma lista de resultados
     val extractedDataFuture = Future.sequence(extractedDataFutures)
 
-    // Espera pelos resultados finais com um tempo limite de 90 segundos
-    val extractedData = Await.result(extractedDataFuture, 90.seconds)
+    // Espera pelos resultados finais com um tempo limite de 300 segundos
+    val extractedData = Await.result(extractedDataFuture, 300.seconds)
 
     // Retorna a lista de dados extraídos das páginas dos filmes
+    println("Rotten Tomatoes Finalizado.")
     extractedData
   }
 }

@@ -13,6 +13,8 @@ object ScrapMeta {
   val searchEnd = "/results"
 
   def scrapMeta(searchTerm: String): List[(String, String, String, String, String, String, String, String, String)] = {
+    println("Recuperando informações do Metascore...")
+    
     val searchExp = searchTerm.replace(" ", "%20")
     val searchUrl = searchBase + searchExp + searchEnd
 
@@ -82,9 +84,10 @@ object ScrapMeta {
     val extractedDataFuture = Future.sequence(extractedDataFutures)
 
     // Espera pelos resultados finais com um tempo limite de 90 segundos
-    val extractedData = Await.result(extractedDataFuture, 90.seconds)
-
+    val extractedData = Await.result(extractedDataFuture, 300.seconds)
+    
     // Retorna a lista de dados extraídos das páginas dos filmes
+    println("Metascore Finalizado.")
     extractedData
   }
 }

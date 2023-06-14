@@ -19,6 +19,8 @@ object ScrapIMDB {
   val baseLink = "https://www.imdb.com"
 
   def scrapIMDB(searchTerm: String): List[(String, String, String, String, String, String, String, String, String)] = {
+    println("Recuperando informações do IMDB...")
+    
     val searchExp = searchTerm.replace(" ", "%20")
     val searchUrl = searchBase + searchExp + searchEnd
 
@@ -73,9 +75,10 @@ object ScrapIMDB {
     val extractedDataFuture = Future.sequence(extractedDataFutures)
 
     // Espera pelos resultados finais com um tempo limite de 90 segundos
-    val extractedData = Await.result(extractedDataFuture, 90.seconds)
+    val extractedData = Await.result(extractedDataFuture, 300.seconds)
 
     // Retorna a lista de dados extraídos das páginas do IMDB
+    println("IMDB Finalizado.")
     extractedData
   }
 }
